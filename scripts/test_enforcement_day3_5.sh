@@ -53,11 +53,16 @@ list_doing_min() {
 
 cleanup_test_doing() {
   # Move any DOING tasks with title prefix [TEST] back to READY
-  local json
-  json=$(list_doing_min)
-  printf '%s' "$json" | node - <<'NODE'
+  # Use a temp file to avoid pipe truncation/broken pipe issues.
+  local tmp
+  tmp=$(mktemp)
+  list_doing_min >"$tmp"
+
+  node - <<'NODE' "$tmp"
 const fs = require('node:fs');
-const raw = fs.readFileSync(0,'utf8');
+const file = process.argv[2];
+const raw = fs.readFileSync(file,'utf8');
+if (!raw || raw.trim().length === 0) process.exit(0);
 const j = JSON.parse(raw);
 const items = j.items || [];
 for (const it of items) {
@@ -66,6 +71,8 @@ for (const it of items) {
   }
 }
 NODE
+
+  rm -f "$tmp"
 }
 
 node_get_id='const fs=require("node:fs"); const raw=fs.readFileSync(0,"utf8"); const j=JSON.parse(raw); if(!j.id) process.exit(2); process.stdout.write(j.id);'
