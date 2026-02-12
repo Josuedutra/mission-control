@@ -37,6 +37,13 @@ start_doing_seed_dod() {
     -d "{\"id\":\"$id\",\"actor\":\"$ACTOR\",\"dodIfEmpty\":[{\"label\":\"Scope\",\"done\":false}]}"
 }
 
+count_doing() {
+  curl -sS -X POST "$CONVEX_SITE_URL/tasks/countByState" \
+    -H "content-type: application/json" \
+    -H "x-mc-secret: $MC_HTTP_SECRET" \
+    -d '{"state":"DOING"}'
+}
+
 node_get_id='const fs=require("node:fs"); const raw=fs.readFileSync(0,"utf8"); const j=JSON.parse(raw); if(!j.id) process.exit(2); process.stdout.write(j.id);'
 
 echo "== Test D: DoD obrigatório (startDoing sem dodIfEmpty deve falhar) =="
@@ -57,9 +64,9 @@ C1_ID=$(printf '%s' "$C1" | node -e "$node_get_id")
 C2_ID=$(printf '%s' "$C2" | node -e "$node_get_id")
 C3_ID=$(printf '%s' "$C3" | node -e "$node_get_id")
 
-echo "startDoing C1"; start_doing_seed_dod "$C1_ID" >/dev/null
+echo "startDoing C1"; start_doing_seed_dod "$C1_ID" | grep -q '"ok":true' || { echo "FAIL C1 start"; exit 1; }
 
-echo "startDoing C2"; start_doing_seed_dod "$C2_ID" >/dev/null
+echo "startDoing C2"; start_doing_seed_dod "$C2_ID" | grep -q '"ok":true' || { echo "FAIL C2 start"; exit 1; }
 
 set +e
 C3_RES=$(start_doing_seed_dod "$C3_ID" 2>&1)
@@ -69,9 +76,20 @@ echo "$C3_RES" | grep -q "WIP_LIMIT_EXECUTOR_DOING_MAX_2" && echo "PASS C" || { 
 # Global WIP: after C1+C2, global DOING is at least 5 (3 Ritmo + 2 Company).
 
 echo "== Test A: WIP global (max 6) =="
-A1=$(create_task "[TEST] Global WIP 6th" "Company" "Wong" "Wong" "OPS" "P2" "None")
-A1_ID=$(printf '%s' "$A1" | node -e "$node_get_id")
-start_doing_seed_dod "$A1_ID" >/dev/null
+# Make sure we are at exactly 6 DOING before trying the 7th.
+while true; do
+  DOING_JSON=$(count_doing)
+  DOING_COUNT=$(printf '%s' "$DOING_JSON" | node -e 'const fs=require("node:fs"); const raw=fs.readFileSync(0,"utf8"); const j=JSON.parse(raw); process.stdout.write(String(j.count||0));')
+  echo "Current global DOING: $DOING_COUNT"
+  if [ "$DOING_COUNT" -ge 6 ]; then
+    break
+  fi
+  # Create + start a filler task
+  F=$(create_task "[TEST] Global WIP filler" "Company" "Wong" "Wong" "OPS" "P2" "None")
+  F_ID=$(printf '%s' "$F" | node -e "$node_get_id")
+  start_doing_seed_dod "$F_ID" | grep -q '"ok":true' || { echo "FAIL: filler start"; exit 1; }
+  sleep 0.2
+done
 
 A2=$(create_task "[TEST] Global WIP 7th" "Company" "Wanda" "Wanda" "OPS" "P2" "None")
 A2_ID=$(printf '%s' "$A2" | node -e "$node_get_id")
