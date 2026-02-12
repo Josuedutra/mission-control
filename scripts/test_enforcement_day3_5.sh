@@ -57,16 +57,17 @@ echo "$D_RES" | grep -q "MISSING_DOD_CHECKLIST" && echo "PASS D" || { echo "FAIL
 # Current: 3 DOING already in Ritmo.
 
 echo "== Test C: WIP por executor (max 2) =="
-C1=$(create_task "[TEST] Exec WIP 1" "Company" "Sentinel" "Sentinel" "OPS" "P2" "None")
-C2=$(create_task "[TEST] Exec WIP 2" "Company" "Sentinel" "Sentinel" "OPS" "P2" "None")
-C3=$(create_task "[TEST] Exec WIP 3" "Company" "Sentinel" "Sentinel" "OPS" "P2" "None")
+TEST_EXECUTOR="${TEST_EXECUTOR:-Wong}"
+C1=$(create_task "[TEST] Exec WIP 1" "Company" "$TEST_EXECUTOR" "$TEST_EXECUTOR" "OPS" "P2" "None")
+C2=$(create_task "[TEST] Exec WIP 2" "Company" "$TEST_EXECUTOR" "$TEST_EXECUTOR" "OPS" "P2" "None")
+C3=$(create_task "[TEST] Exec WIP 3" "Company" "$TEST_EXECUTOR" "$TEST_EXECUTOR" "OPS" "P2" "None")
 C1_ID=$(printf '%s' "$C1" | node -e "$node_get_id")
 C2_ID=$(printf '%s' "$C2" | node -e "$node_get_id")
 C3_ID=$(printf '%s' "$C3" | node -e "$node_get_id")
 
-echo "startDoing C1"; start_doing_seed_dod "$C1_ID" | grep -q '"ok":true' || { echo "FAIL C1 start"; exit 1; }
+echo "startDoing C1 ($TEST_EXECUTOR)"; start_doing_seed_dod "$C1_ID" | grep -q '"ok":true' || { echo "FAIL C1 start"; exit 1; }
 
-echo "startDoing C2"; start_doing_seed_dod "$C2_ID" | grep -q '"ok":true' || { echo "FAIL C2 start"; exit 1; }
+echo "startDoing C2 ($TEST_EXECUTOR)"; start_doing_seed_dod "$C2_ID" | grep -q '"ok":true' || { echo "FAIL C2 start"; exit 1; }
 
 set +e
 C3_RES=$(start_doing_seed_dod "$C3_ID" 2>&1)
