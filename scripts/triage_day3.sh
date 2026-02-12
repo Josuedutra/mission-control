@@ -31,10 +31,11 @@ triage_board() {
   resp=$(tasks_by_board_state "$board" "INBOX")
 
   # Extract id+priority from response using node (available) to avoid jq dependency.
-  node - <<'NODE' "$resp"
-const raw = process.argv[1];
+  printf '%s' "$resp" | node - <<'NODE'
+const fs = require('node:fs');
+const raw = fs.readFileSync(0, 'utf8');
 let data;
-try { data = JSON.parse(raw); } catch { console.error('BAD_JSON'); process.exit(1); }
+try { data = JSON.parse(raw); } catch (e) { console.error('BAD_JSON', e?.message); process.exit(1); }
 const tasks = data.tasks || [];
 for (const t of tasks) {
   console.log(`${t._id}\t${t.priority}\t${t.title}`);
@@ -48,10 +49,11 @@ apply_board() {
   local resp
   resp=$(tasks_by_board_state "$board" "INBOX")
 
-  node - <<'NODE' "$resp" "$board" "$actor"
-const raw = process.argv[1];
-const board = process.argv[2];
-const actor = process.argv[3];
+  printf '%s' "$resp" | node - <<'NODE' "$board" "$actor"
+const fs = require('node:fs');
+const raw = fs.readFileSync(0, 'utf8');
+const board = process.argv[1];
+const actor = process.argv[2];
 const { execSync } = require('node:child_process');
 const site = process.env.CONVEX_SITE_URL;
 const secret = process.env.MC_HTTP_SECRET;
