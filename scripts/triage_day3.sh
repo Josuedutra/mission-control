@@ -57,9 +57,10 @@ apply_board() {
 
   node - <<'NODE' "$tmp" "$board" "$actor"
 const fs = require('node:fs');
-const file = process.argv[1];
-const board = process.argv[2];
-const actor = process.argv[3];
+// argv: [node, '-', file, board, actor]
+const file = process.argv[2];
+const board = process.argv[3];
+const actor = process.argv[4];
 const { execSync } = require('node:child_process');
 const site = process.env.CONVEX_SITE_URL;
 const secret = process.env.MC_HTTP_SECRET;
