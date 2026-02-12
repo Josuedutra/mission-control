@@ -86,6 +86,14 @@ for id in $(cleanup_test_doing); do
   echo "moved [TEST] $id -> READY"
 done
 
+echo "== Test B: WIP Ritmo (max 3) =="
+B_TASK_JSON=$(create_task "[TEST] Ritmo WIP 4th" "Ritmo" "Wanda" "Wanda" "OPS" "P2" "None")
+B_ID=$(printf '%s' "$B_TASK_JSON" | node -e "$node_get_id")
+set +e
+B_RES=$(start_doing_seed_dod "$B_ID" 2>&1)
+set -e
+echo "$B_RES" | grep -q "WIP_LIMIT_RITMO_DOING_MAX_3" && echo "PASS B" || { echo "FAIL B: $B_RES"; exit 1; }
+
 echo "== Test D: DoD obrigatório (startDoing sem dodIfEmpty deve falhar) =="
 D_TASK_JSON=$(create_task "[TEST] DoD required" "Company" "Friday" "Friday" "OPS" "P2" "None")
 D_ID=$(printf '%s' "$D_TASK_JSON" | node -e "$node_get_id")
