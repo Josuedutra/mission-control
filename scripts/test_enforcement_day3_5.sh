@@ -125,10 +125,12 @@ while true; do
   if [ "$DOING_COUNT" -ge 6 ]; then
     break
   fi
-  # Create + start a filler task
-  F=$(create_task "[TEST] Global WIP filler" "Company" "Wong" "Wong" "OPS" "P2" "None")
+  # Create + start a filler task (use a dedicated executor to avoid colliding with Test C executor WIP)
+  F_EXEC="${FILLER_EXECUTOR:-Wanda}"
+  F=$(create_task "[TEST] Global WIP filler" "Company" "$F_EXEC" "$F_EXEC" "OPS" "P2" "None")
   F_ID=$(printf '%s' "$F" | node -e "$node_get_id")
-  start_doing_seed_dod "$F_ID" | grep -q '"ok":true' || { echo "FAIL: filler start"; exit 1; }
+  F_RES=$(start_doing_seed_dod "$F_ID" 2>&1)
+  echo "$F_RES" | grep -q '"ok":true' || { echo "FAIL: filler start: $F_RES"; exit 1; }
   sleep 0.2
 done
 
