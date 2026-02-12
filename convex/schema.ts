@@ -70,6 +70,7 @@ export default defineSchema({
     state: State,
 
     owner: v.string(),
+    executor: v.string(),
 
     gate: Gate,
     evidenceRequired: EvidenceRequired,

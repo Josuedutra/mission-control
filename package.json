@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "test:ci": "jest --runInBand --coverage",
-    "test:tripwire": "bash scripts/no-direct-provider.sh"
+    "test:tripwire": "bash scripts/no-direct-provider.sh",
+    "convex:dev:once": "convex dev --once"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",

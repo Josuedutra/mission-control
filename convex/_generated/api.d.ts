@@ -10,7 +10,9 @@
 
 import type * as constants from "../constants.js";
 import type * as http from "../http.js";
+import type * as override from "../override.js";
 import type * as policy from "../policy.js";
+import type * as queries from "../queries.js";
 import type * as tasks from "../tasks.js";
 
 import type {
@@ -22,7 +24,9 @@ import type {
 declare const fullApi: ApiFromModules<{
   constants: typeof constants;
   http: typeof http;
+  override: typeof override;
   policy: typeof policy;
+  queries: typeof queries;
   tasks: typeof tasks;
 }>;
 

@@ -43,6 +43,7 @@ export const create = mutation({
     ),
     priority: v.union(v.literal("P0"), v.literal("P1"), v.literal("P2"), v.literal("P3")),
     owner: v.string(),
+    executor: v.optional(v.string()),
     gate: Gate,
     evidenceRequired: v.boolean(),
     slaClass: v.union(v.literal("none"), v.literal("standard"), v.literal("urgent"), v.literal("incident")),
@@ -60,6 +61,7 @@ export const create = mutation({
       priority: args.priority,
       state: "INBOX",
       owner: args.owner,
+      executor: args.owner,
       gate: args.gate,
       evidenceRequired: args.evidenceRequired,
       slaClass: args.slaClass,
@@ -118,12 +120,19 @@ export const transition = mutation({
   },
 });
 
+const GATE_APPROVERS: Record<string, string> = {
+  Security: "Sentinel",
+  RevOps: "Ledger",
+  Claims: "Fury",
+  Product: "Shuri",
+  None: "",
+};
+
 export const approveGate = mutation({
   args: {
     id: v.id("tasks"),
     gate: Gate,
-    approvedBy: v.string(),
-    executor: v.optional(v.string()),
+    actor: v.string(),
     evidenceLink: v.optional(v.string()),
     notes: v.optional(v.string()),
   },
@@ -132,22 +141,44 @@ export const approveGate = mutation({
     const t = await ctx.db.get(args.id);
     if (!t) throw new Error("TASK_NOT_FOUND");
 
-    if (args.executor && args.executor === args.approvedBy) {
+    const requiredApprover = GATE_APPROVERS[args.gate];
+    if (args.gate !== "None" && args.actor !== requiredApprover) {
+      await ctx.db.insert("activities", {
+        type: "gate_approve_denied",
+        agent: args.actor,
+        taskId: args.id,
+        message: `Denied gate approve ${args.gate}: actor_not_approver (expected ${requiredApprover})`,
+        createdAt: now,
+      });
+      throw new Error("ACTOR_NOT_GATE_APPROVER");
+    }
+
+    if (t.executor && t.executor === args.actor) {
+      await ctx.db.insert("activities", {
+        type: "gate_approve_denied",
+        agent: args.actor,
+        taskId: args.id,
+        message: `Denied gate approve ${args.gate}: approver_equals_executor`,
+        createdAt: now,
+      });
       throw new Error("APPROVER_EQUALS_EXECUTOR");
     }
 
-    const approvals = [...t.approvals, {
-      gate: args.gate,
-      approvedBy: args.approvedBy,
-      timestampUtc: now,
-      evidenceLink: args.evidenceLink,
-      notes: args.notes,
-    }];
+    const approvals = [
+      ...t.approvals,
+      {
+        gate: args.gate,
+        approvedBy: args.actor,
+        timestampUtc: now,
+        evidenceLink: args.evidenceLink,
+        notes: args.notes,
+      },
+    ];
 
     await ctx.db.patch(args.id, { approvals, updatedAt: now });
     await ctx.db.insert("activities", {
       type: "gate_approved",
-      agent: args.approvedBy,
+      agent: args.actor,
       taskId: args.id,
       message: `Gate approved: ${args.gate}`,
       createdAt: now,
