@@ -124,6 +124,18 @@ export const transition = mutation({
     const t = await ctx.db.get(args.id);
     if (!t) throw new Error("TASK_NOT_FOUND");
 
+    const res = validateTransition(t.state, args.to, t as any);
+    if (!res.ok) {
+      await ctx.db.insert("activities", {
+        type: "task_transition_denied",
+        agent: args.actor,
+        taskId: args.id,
+        message: `Denied transition ${t.state} -> ${args.to}: ${res.errors.join(",")}`,
+        createdAt: now,
+      });
+      throw new Error(`TRANSITION_DENIED:${res.errors.join(",")}`);
+    }
+
     if (args.to === "DOING") {
       const wipErr = await enforceWipOnDoing(ctx, t);
       if (wipErr) {
@@ -136,18 +148,6 @@ export const transition = mutation({
         });
         throw new Error(`TRANSITION_DENIED:${wipErr}`);
       }
-    }
-
-    const res = validateTransition(t.state, args.to, t as any);
-    if (!res.ok) {
-      await ctx.db.insert("activities", {
-        type: "task_transition_denied",
-        agent: args.actor,
-        taskId: args.id,
-        message: `Denied transition ${t.state} -> ${args.to}: ${res.errors.join(",")}`,
-        createdAt: now,
-      });
-      throw new Error(`TRANSITION_DENIED:${res.errors.join(",")}`);
     }
 
     await ctx.db.patch(args.id, { state: args.to, updatedAt: now });
@@ -198,18 +198,6 @@ export const startDoing = mutation({
     const t2 = await ctx.db.get(args.id);
     if (!t2) throw new Error("TASK_NOT_FOUND");
 
-    const wipErr = await enforceWipOnDoing(ctx, t2);
-    if (wipErr) {
-      await ctx.db.insert("activities", {
-        type: "task_transition_denied",
-        agent: args.actor,
-        taskId: args.id,
-        message: `Denied transition ${t2.state} -> DOING: ${wipErr}`,
-        createdAt: now,
-      });
-      throw new Error(`TRANSITION_DENIED:${wipErr}`);
-    }
-
     const res = validateTransition(t2.state, "DOING", t2 as any);
     if (!res.ok) {
       await ctx.db.insert("activities", {
@@ -220,6 +208,18 @@ export const startDoing = mutation({
         createdAt: now,
       });
       throw new Error(`TRANSITION_DENIED:${res.errors.join(",")}`);
+    }
+
+    const wipErr = await enforceWipOnDoing(ctx, t2);
+    if (wipErr) {
+      await ctx.db.insert("activities", {
+        type: "task_transition_denied",
+        agent: args.actor,
+        taskId: args.id,
+        message: `Denied transition ${t2.state} -> DOING: ${wipErr}`,
+        createdAt: now,
+      });
+      throw new Error(`TRANSITION_DENIED:${wipErr}`);
     }
 
     await ctx.db.patch(args.id, { state: "DOING", updatedAt: now });
