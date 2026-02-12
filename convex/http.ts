@@ -30,6 +30,51 @@ http.route({
 
 // Example: transition task via HTTP (for gateway integration). Auth TBD.
 http.route({
+  path: "/tasks/create",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const unauthorized = requireMcSecret(req);
+    if (unauthorized) return unauthorized;
+
+    const body = await req.json();
+    const {
+      title,
+      description,
+      board,
+      product,
+      domain,
+      type,
+      priority,
+      owner,
+      gate,
+      evidenceRequired,
+      slaClass,
+      riskScore,
+    } = body ?? {};
+
+    const id = await ctx.runMutation(api.tasks.create, {
+      title,
+      description,
+      board,
+      product,
+      domain,
+      type,
+      priority,
+      owner,
+      gate,
+      evidenceRequired,
+      slaClass,
+      riskScore,
+    });
+
+    return new Response(JSON.stringify({ ok: true, id }), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  }),
+});
+
+http.route({
   path: "/tasks/transition",
   method: "POST",
   handler: httpAction(async (ctx, req) => {

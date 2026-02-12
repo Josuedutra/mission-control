@@ -72,12 +72,12 @@ export const create = mutation({
       updatedAt: now,
     });
 
-    await ctx.db.insert("activities", {
-      type: "task_created",
-      agent: args.owner,
+    await ctx.runMutation(internal.activity.log, {
       taskId: id,
-      message: `Task created: ${args.title}`,
-      createdAt: now,
+      actor: args.owner,
+      action: "TASK_CREATED",
+      ok: true,
+      meta: { title: args.title, board: args.board, product: args.product, type: args.type, priority: args.priority },
     });
 
     return id;
