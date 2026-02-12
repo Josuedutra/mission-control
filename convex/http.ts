@@ -75,6 +75,23 @@ http.route({
 });
 
 http.route({
+  path: "/tasks/listByBoard",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const unauthorized = requireMcSecret(req);
+    if (unauthorized) return unauthorized;
+
+    const body = await req.json();
+    const { board, state } = body ?? {};
+    const tasks = await ctx.runQuery(api.queries.listByBoard, { board, state });
+    return new Response(JSON.stringify({ ok: true, tasks }), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  }),
+});
+
+http.route({
   path: "/tasks/transition",
   method: "POST",
   handler: httpAction(async (ctx, req) => {

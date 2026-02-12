@@ -37,13 +37,26 @@ export const listByBoard = query({
         .withIndex("by_board", (q) => q.eq("board", args.board).eq("state", args.state!))
         .collect();
     }
-    // fallback: filter in memory
-    const all = await ctx.db.query("tasks").withIndex("by_board", (q) => q.eq("board", args.board).eq("state", "INBOX")).collect();
-    const states = ["TRIAGED", "READY", "DOING", "REVIEW", "APPROVAL", "DONE", "BLOCKED"] as const;
-    const rest = await Promise.all(
-      states.map((s) => ctx.db.query("tasks").withIndex("by_board", (q) => q.eq("board", args.board).eq("state", s)).collect()),
+
+    // Collect per state using the board+state index.
+    const states = [
+      "INBOX",
+      "TRIAGED",
+      "READY",
+      "DOING",
+      "REVIEW",
+      "APPROVAL",
+      "DONE",
+      "BLOCKED",
+    ] as const;
+
+    const batches = await Promise.all(
+      states.map((s) =>
+        ctx.db.query("tasks").withIndex("by_board", (q) => q.eq("board", args.board).eq("state", s)).collect(),
+      ),
     );
-    return all.concat(...rest);
+
+    return batches.flat();
   },
 });
 
