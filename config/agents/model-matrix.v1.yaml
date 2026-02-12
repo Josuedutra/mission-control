@@ -1,0 +1,169 @@
+version: 1
+policy: bootstrapped
+principle: "Default cheap. Escalate only when risk > cost."
+
+tiers:
+  frontier: "Large Frontier Model"
+  balanced: "Balanced Pro Model"
+  cost: "Cost-Efficient Model"
+  reasoning: "Reasoning Model"
+
+dynamic_escalation:
+  escalate_if_impacts:
+    - money_flow
+    - authentication
+    - tenant_isolation
+    - public_claims
+    - irreversible_product_decision
+  escalate_if:
+    - "incident_severity == P0 -> highest_tier"
+    - "uncertainty_score > 7 -> +1 tier"
+  post_task: "revert_to_baseline"
+
+cost_guardrails:
+  target_mix:
+    cost: 0.80
+    balanced: 0.15
+    frontier: 0.05
+  constraints:
+    - "No always-frontier agents"
+    - "Avoid parallel high-frequency heartbeats"
+    - "Keep variable agents on-demand outside active phase"
+
+agents:
+  - id: coordinator
+    name: "Coordinator (PMO / Jarvis)"
+    baseline:
+      primary_tier: cost
+      fallback_tier: balanced
+      reasoning: low
+      reasoning_escalation: medium
+      cost_target: low
+    escalate_on:
+      - roadmap_reorganization
+      - priority_conflict
+      - strategy_decision_with_financial_impact
+
+  - id: developer
+    name: "Developer (Friday)"
+    baseline:
+      primary_tier: balanced
+      fallback_tier: cost
+      reasoning: medium
+      reasoning_escalation: high
+      cost_target: medium
+    escalation_policy:
+      allow_frontier: true
+      frontier_on:
+        - auth_changes
+        - multi_tenant_isolation
+        - billing_core
+        - webhook_validation
+        - structural_migrations
+        - production_P0_bug
+
+  - id: security
+    name: "Security / Compliance (Sentinel)"
+    baseline:
+      primary_tier: balanced
+      fallback_tier: cost
+      reasoning: medium
+      reasoning_escalation: high
+      cost_target: medium
+    escalation_policy:
+      allow_frontier: true
+      frontier_on:
+        - major_threat_modeling
+        - pre_release_security_review
+        - pii_data_flow_changes
+        - permission_matrix_changes
+
+  - id: revops
+    name: "RevOps / Finance (Ledger)"
+    baseline:
+      primary_tier: cost
+      fallback_tier: balanced
+      reasoning: low
+      reasoning_escalation: medium
+      cost_target: low
+    escalate_on:
+      - pricing_changes
+      - new_plan_creation
+      - reconciliation_delta_over_1_percent
+      - fiscal_rule_change
+
+  - id: product_qa
+    name: "Product / QA (Shuri)"
+    baseline:
+      primary_tier: cost
+      fallback_tier: balanced
+      reasoning: low
+      reasoning_escalation: medium
+      cost_target: low
+    escalate_on:
+      - complex_regression
+      - multi_step_flow_failure
+      - high_churn_impact_feature
+
+  - id: documentation
+    name: "Documentation / Knowledge (Wong)"
+    baseline:
+      primary_tier: cost
+      fallback_tier: cost
+      reasoning: low
+      reasoning_escalation: low
+      cost_target: minimum
+    escalation_policy:
+      allow_frontier: false
+
+  - id: research
+    name: "Research / Market Intelligence (Fury)"
+    baseline:
+      primary_tier: balanced
+      fallback_tier: cost
+      reasoning: medium
+      reasoning_escalation: high
+      cost_target: medium
+    escalation_policy:
+      allow_frontier: true
+      frontier_on:
+        - new_product_decision
+        - icp_pivot
+        - deep_strategic_comparison
+        - kill_or_scale_decision
+
+  - id: growth_content
+    name: "Growth Content (SEO + Copy)"
+    baseline:
+      primary_tier: cost
+      fallback_tier: balanced
+      reasoning: low
+      reasoning_escalation: medium
+      cost_target: low
+    escalate_on:
+      - main_landing_page
+      - pricing_page
+      - strategic_manifesto
+
+  - id: lifecycle
+    name: "Lifecycle / Email (Pepper)"
+    baseline:
+      primary_tier: cost
+      fallback_tier: cost
+      reasoning: off
+      reasoning_escalation: low
+      cost_target: minimum
+    escalation_policy:
+      allow_frontier: false
+
+  - id: design
+    name: "Design (Wanda)"
+    baseline:
+      primary_tier: cost
+      fallback_tier: balanced
+      reasoning: low
+      reasoning_escalation: low
+      cost_target: low
+    escalate_on:
+      - structural_redesign
+      - complex_ux_architecture
