@@ -32,7 +32,7 @@ export function classifyMemory(text: string, meta?: ClassifyMetadata): MemoryLev
   if (TOKEN_RE.test(t)) score3 += 3;
 
   if (/\b(api[_-]?key|secret|password|token)\b/i.test(t)) score3 += 2;
-  if (/webhook/i.test(t) && /\b(payload|signature|event|stripe|ifthenpay)\b/i.test(t)) score3 += 2;
+  if (/webhook/i.test(t) && /\b(payload|signature|event|stripe|ifthenpay)\b/i.test(t)) score3 += 3;
 
   const weak = (NIF_RE.test(t) ? 1 : 0) + (PHONE_RE.test(t) ? 1 : 0);
   score3 += weak;

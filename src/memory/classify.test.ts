@@ -24,4 +24,17 @@ describe("classifyMemory", () => {
   test("Level 2 finance strategy", () => {
     expect(classifyMemory("MRR projection and pricing strategy")).toBe(2);
   });
+
+  test("metadata tags and containsClientData force Level 3", () => {
+    expect(classifyMemory("safe", { containsClientData: true })).toBe(3);
+    expect(classifyMemory("safe", { tags: ["bcc"] })).toBe(3);
+  });
+
+  test("confidential source returns Level 2", () => {
+    expect(classifyMemory("generic", { source: "confidential" })).toBe(2);
+  });
+
+  test("default public text returns Level 0", () => {
+    expect(classifyMemory("hello world", { source: "public" })).toBe(0);
+  });
 });

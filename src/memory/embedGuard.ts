@@ -20,7 +20,10 @@ export function logDeny(reason: string, text: string, meta?: ClassifyMetadata) {
 
 export async function embedWithGuard(
   input: EmbedInput,
-  embedFn: (sanitizedText: string, meta?: ClassifyMetadata) => Promise<unknown>
+  embedFn: (sanitizedText: string, meta?: ClassifyMetadata) => Promise<unknown>,
+  deps?: {
+    sanitizeFn?: typeof sanitizeForEmbedding;
+  }
 ): Promise<{ status: "DENY" | "OK"; reason?: string }> {
   const level = classifyMemory(input.text, input.metadata);
   if (level === 3) {
@@ -28,7 +31,8 @@ export async function embedWithGuard(
     return { status: "DENY", reason: "LEVEL_3_PROHIBITED" };
   }
 
-  const { sanitizedText, report } = sanitizeForEmbedding(input.text);
+  const sanitizeFn = deps?.sanitizeFn ?? sanitizeForEmbedding;
+  const { sanitizedText, report } = sanitizeFn(input.text);
   if (report.failed) {
     logDeny("REDACTION_FAILED", input.text, input.metadata);
     return { status: "DENY", reason: "REDACTION_FAILED" };
