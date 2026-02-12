@@ -8,7 +8,9 @@
  * @module
  */
 
+import type * as activity from "../activity.js";
 import type * as constants from "../constants.js";
+import type * as gates from "../gates.js";
 import type * as http from "../http.js";
 import type * as override from "../override.js";
 import type * as policy from "../policy.js";
@@ -22,7 +24,9 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  activity: typeof activity;
   constants: typeof constants;
+  gates: typeof gates;
   http: typeof http;
   override: typeof override;
   policy: typeof policy;

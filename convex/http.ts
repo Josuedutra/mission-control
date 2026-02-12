@@ -71,8 +71,8 @@ http.route({
     if (unauthorized) return unauthorized;
 
     const body = await req.json();
-    const { id, actor, reason, acceptedRisk, reviewDeadlineUtc } = body ?? {};
-    const res = await ctx.runMutation(api.override.overrideGate, { id, actor, reason, acceptedRisk, reviewDeadlineUtc });
+    const { id, actor, reason, acceptedRisk, reviewDeadlineIso } = body ?? {};
+    const res = await ctx.runMutation(api.override.overrideGate, { id, actor, reason, acceptedRisk, reviewDeadlineIso });
     return new Response(JSON.stringify(res), {
       status: 200,
       headers: { "content-type": "application/json" },

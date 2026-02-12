@@ -28,7 +28,8 @@ type TaskLike = {
     by: string;
     reason: string;
     acceptedRisk: string;
-    reviewDeadlineUtc: number;
+    reviewDeadlineIso: string;
+    reviewDeadlineUtc?: number;
   };
 };
 
@@ -90,7 +91,7 @@ export function validateTransition(
       if (!task.override.by) errors.push("OVERRIDE_MISSING_BY");
       if (!task.override.reason) errors.push("OVERRIDE_MISSING_REASON");
       if (!task.override.acceptedRisk) errors.push("OVERRIDE_MISSING_ACCEPTED_RISK");
-      if (!task.override.reviewDeadlineUtc) errors.push("OVERRIDE_MISSING_REVIEW_DEADLINE");
+      if (!task.override.reviewDeadlineIso) errors.push("OVERRIDE_MISSING_REVIEW_DEADLINE");
     }
   }
 
