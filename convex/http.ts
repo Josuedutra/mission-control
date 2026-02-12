@@ -115,6 +115,23 @@ http.route({
 });
 
 http.route({
+  path: "/tasks/startDoing",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const unauthorized = requireMcSecret(req);
+    if (unauthorized) return unauthorized;
+
+    const body = await req.json();
+    const { id, actor, dodIfEmpty } = body ?? {};
+    const res = await ctx.runMutation(api.tasks.startDoing, { id, actor, dodIfEmpty });
+    return new Response(JSON.stringify(res), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  }),
+});
+
+http.route({
   path: "/tasks/transition",
   method: "POST",
   handler: httpAction(async (ctx, req) => {

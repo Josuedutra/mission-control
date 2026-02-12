@@ -10,6 +10,7 @@ HTTP Actions:
 - GET  /health
 - POST /tasks/create (requires `X-MC-SECRET`)
 - POST /tasks/setDod (requires `X-MC-SECRET`)
+- POST /tasks/startDoing (requires `X-MC-SECRET`)
 - POST /tasks/transition (requires `X-MC-SECRET`)
 - POST /tasks/approve (requires `X-MC-SECRET`)
 - POST /tasks/override (requires `X-MC-SECRET`)
