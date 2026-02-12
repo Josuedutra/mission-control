@@ -43,6 +43,7 @@ export const create = mutation({
     ),
     priority: v.union(v.literal("P0"), v.literal("P1"), v.literal("P2"), v.literal("P3")),
     owner: v.string(),
+    executor: v.optional(v.string()),
     gate: Gate,
     evidenceRequired: v.boolean(),
     slaClass: v.union(v.literal("none"), v.literal("standard"), v.literal("urgent"), v.literal("incident")),
@@ -60,6 +61,7 @@ export const create = mutation({
       priority: args.priority,
       state: "INBOX",
       owner: args.owner,
+      executor: args.owner,
       gate: args.gate,
       evidenceRequired: args.evidenceRequired,
       slaClass: args.slaClass,
@@ -118,12 +120,14 @@ export const transition = mutation({
   },
 });
 
+import { internal } from "./_generated/api";
+import { requireApprover, requireApproverNotExecutor, GateType } from "./gates";
+
 export const approveGate = mutation({
   args: {
     id: v.id("tasks"),
     gate: Gate,
-    approvedBy: v.string(),
-    executor: v.optional(v.string()),
+    actor: v.string(),
     evidenceLink: v.optional(v.string()),
     notes: v.optional(v.string()),
   },
@@ -132,27 +136,52 @@ export const approveGate = mutation({
     const t = await ctx.db.get(args.id);
     if (!t) throw new Error("TASK_NOT_FOUND");
 
-    if (args.executor && args.executor === args.approvedBy) {
-      throw new Error("APPROVER_EQUALS_EXECUTOR");
-    }
-
-    const approvals = [...t.approvals, {
-      gate: args.gate,
-      approvedBy: args.approvedBy,
-      timestampUtc: now,
-      evidenceLink: args.evidenceLink,
-      notes: args.notes,
-    }];
-
-    await ctx.db.patch(args.id, { approvals, updatedAt: now });
-    await ctx.db.insert("activities", {
-      type: "gate_approved",
-      agent: args.approvedBy,
+    await ctx.runMutation(internal.activity.log, {
       taskId: args.id,
-      message: `Gate approved: ${args.gate}`,
-      createdAt: now,
+      actor: args.actor,
+      action: "GATE_APPROVE_ATTEMPT",
+      ok: true,
+      meta: { gate: args.gate },
     });
 
-    return { ok: true };
+    try {
+      if (args.gate !== "None") requireApprover(args.gate as GateType, args.actor);
+      requireApproverNotExecutor(args.actor, t.executor);
+
+      const already = (t.approvals ?? []).some((a: any) => a.gate === args.gate);
+      if (already) throw new Error("CONFLICT_GATE_ALREADY_APPROVED");
+
+      const approvals = [
+        ...t.approvals,
+        {
+          gate: args.gate,
+          approvedBy: args.actor,
+          timestampUtc: now,
+          evidenceLink: args.evidenceLink,
+          notes: args.notes,
+        },
+      ];
+
+      await ctx.db.patch(args.id, { approvals, updatedAt: now });
+      await ctx.runMutation(internal.activity.log, {
+        taskId: args.id,
+        actor: args.actor,
+        action: "GATE_APPROVED",
+        ok: true,
+        meta: { gate: args.gate },
+      });
+
+      return { ok: true };
+    } catch (e: any) {
+      await ctx.runMutation(internal.activity.log, {
+        taskId: args.id,
+        actor: args.actor,
+        action: "GATE_APPROVED",
+        ok: false,
+        message: e?.message ?? String(e),
+        meta: { gate: args.gate },
+      });
+      throw e;
+    }
   },
 });

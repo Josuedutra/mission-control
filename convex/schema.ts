@@ -70,6 +70,7 @@ export default defineSchema({
     state: State,
 
     owner: v.string(),
+    executor: v.string(),
 
     gate: Gate,
     evidenceRequired: EvidenceRequired,
@@ -103,7 +104,9 @@ export default defineSchema({
         by: v.string(),
         reason: v.string(),
         acceptedRisk: v.string(),
-        reviewDeadlineUtc: v.number(),
+        reviewDeadlineIso: v.string(),
+        // Back-compat (optional): keep numeric UTC if present in older records
+        reviewDeadlineUtc: v.optional(v.number()),
         followupTaskId: v.optional(v.id("tasks")),
       }),
     ),

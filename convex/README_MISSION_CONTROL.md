@@ -8,9 +8,13 @@ This Convex app implements the Mission Control runtime layer:
 
 HTTP Actions:
 - GET  /health
-- POST /tasks/transition
+- POST /tasks/transition (requires `X-MC-SECRET`)
+- POST /tasks/approve (requires `X-MC-SECRET`)
+- POST /tasks/override (requires `X-MC-SECRET`)
+
+Env:
+- `MC_HTTP_SECRET` (required, fail-closed)
 
 Next steps:
-- Add auth for HTTP actions (shared secret header)
-- Add override workflow (Founder) + automatic follow-up P0 + risk register entry
-- Add queries for boards/views
+- Add rate limiting for HTTP actions (day 2)
+- Expand list queries into HTTP endpoints (if needed)
