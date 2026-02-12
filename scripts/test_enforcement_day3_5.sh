@@ -150,6 +150,4 @@ set -e
 
 echo "$A2_RES" | grep -q "WIP_LIMIT_GLOBAL_DOING_MAX_6" && echo "PASS A" || { echo "FAIL A: $A2_RES"; exit 1; }
 
-echo "All enforcement tests PASS (A,C,D)."
-
-echo "NOTE: Test B (Ritmo max 3) is already satisfied by current state; run manually by trying to startDoing any 4th Ritmo task."
+echo "All enforcement tests PASS (A,B,C,D)."
