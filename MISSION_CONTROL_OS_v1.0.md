@@ -1,12 +1,12 @@
 # Mission Control OS for B2B SaaS (OpenClaw)
 
-> **Purpose**: This document revises and operationalizes the attached guide into a **permanent Operating System** for a B2B micro‑SaaS/SaaS company using **OpenClaw**. It is designed to outlive any single program (e.g., IEFP), scale across **multiple products**, and support **one human manager** with **specialist AI agents**.
+> **Purpose**: This document revises and operationalizes the attached guide into a **permanent Operating System** for a B2B micro‑SaaS/SaaS company using **OpenClaw**. It is designed to outlive any single program (e.g., Financiamento), scale across **multiple products**, and support **one human manager** with **specialist AI agents**.
 
 ---
 
 ## 0. Executive Summary
 
-* **IEFP is temporary**; the **Operating System is permanent**.
+* **Financiamento is temporary**; the **Operating System is permanent**.
 * The company runs as a **portfolio of products**, each with a **product pod**, supported by **shared services** (Security, RevOps, PMO, Docs).
 * **Agents are specialists**, not headcount. The number of agents can grow/shrink; **governance, gates, and evidence stay fixed**.
 * **OpenClaw** provides persistence (sessions, memory, workspace) and automation (heartbeats), with **security-first guardrails**.
@@ -110,7 +110,7 @@
 
 ### 5.3 Temporary Pods
 
-* **IEFP Evidence Pod** (procurement, evidence, justification). After IEFP, hibernate the pod; keep templates.
+* **Financiamento Evidence Pod** (procurement, evidence, justification). After Financiamento, hibernate the pod; keep templates.
 
 ---
 
@@ -160,10 +160,10 @@ Rule: if it must persist, it must be written.
 
 ---
 
-## 10. IEFP Alignment (Non‑Definitive)
+## 10. Financiamento Alignment (Non‑Definitive)
 
-* Treat IEFP as a **project**, not the company.
-* Run an **IEFP Evidence Pod** with strict templates.
+* Treat Financiamento as a **project**, not the company.
+* Run an **Financiamento Evidence Pod** with strict templates.
 * After submission, **decommission the pod**; keep the OS unchanged.
 
 ---
@@ -209,7 +209,7 @@ Rule: if it must persist, it must be written.
 
 (Include Feature, Security, RevOps, Incident templates with DoD and evidence checklists.)
 
-## Appendix B — Decommissioning IEFP Pod
+## Appendix B — Decommissioning Financiamento Pod
 
 * Freeze evidence
 * Archive dossier
