@@ -8,7 +8,7 @@ This Convex app implements the Mission Control runtime layer:
 
 HTTP Actions:
 - GET  /health
-- POST /tasks/create (requires `X-MC-SECRET`)
+- POST /tasks/create (requires `X-MC-SECRET`) (supports optional `executor`)
 - POST /tasks/setDod (requires `X-MC-SECRET`)
 - POST /tasks/startDoing (requires `X-MC-SECRET`)
 - POST /tasks/transition (requires `X-MC-SECRET`)
