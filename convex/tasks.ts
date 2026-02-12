@@ -101,7 +101,12 @@ async function enforceWipOnDoing(ctx: any, task: any) {
   // Executor WIP: each executor DOING <= 2
   const execDoing = await ctx.db
     .query("tasks")
-    .filter((q: any) => q.eq(q.field("executor"), task.executor).eq(q.field("state"), "DOING"))
+    .filter((q: any) =>
+      q.and(
+        q.eq(q.field("executor"), task.executor),
+        q.eq(q.field("state"), "DOING"),
+      ),
+    )
     .collect();
   if (execDoing.length >= 2) return "WIP_LIMIT_EXECUTOR_DOING_MAX_2";
 
