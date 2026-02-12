@@ -9,7 +9,7 @@ actor="Jarvis"
 tasks_by_board_state() {
   local board="$1"
   local state="$2"
-  curl -sS -X POST "$CONVEX_SITE_URL/tasks/listByBoard" \
+  curl -sS -X POST "$CONVEX_SITE_URL/tasks/triageList" \
     -H "content-type: application/json" \
     -H "x-mc-secret: $MC_HTTP_SECRET" \
     -d "{\"board\":\"$board\",\"state\":\"$state\"}"
@@ -36,9 +36,9 @@ const fs = require('node:fs');
 const raw = fs.readFileSync(0, 'utf8');
 let data;
 try { data = JSON.parse(raw); } catch (e) { console.error('BAD_JSON', e?.message); process.exit(1); }
-const tasks = data.tasks || [];
-for (const t of tasks) {
-  console.log(`${t._id}\t${t.priority}\t${t.title}`);
+const items = data.items || [];
+for (const t of items) {
+  console.log(`${t.id}\t${t.priority}\t${t.title}`);
 }
 NODE
 }
@@ -71,12 +71,12 @@ try {
   process.exit(1);
 }
 
-const tasks = data.tasks || [];
-for (const t of tasks) {
+const items = data.items || [];
+for (const t of items) {
   const to = t.priority === 'P0' ? 'READY' : 'TRIAGED';
-  const cmd = `curl -sS -X POST "${site}/tasks/transition" -H "content-type: application/json" -H "x-mc-secret: ${secret}" -d '{"id":"${t._id}","to":"${to}","actor":"${actor}"}' >/dev/null`;
+  const cmd = `curl -sS -X POST "${site}/tasks/transition" -H "content-type: application/json" -H "x-mc-secret: ${secret}" -d '{"id":"${t.id}","to":"${to}","actor":"${actor}"}' >/dev/null`;
   execSync(cmd, { stdio: 'ignore', shell: '/bin/bash' });
-  console.log(`[${board}] ${t.priority} -> ${to} :: ${t._id} :: ${t.title}`);
+  console.log(`[${board}] ${t.priority} -> ${to} :: ${t.id} :: ${t.title}`);
 }
 NODE
 }

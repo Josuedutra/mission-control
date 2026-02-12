@@ -91,6 +91,29 @@ http.route({
   }),
 });
 
+// Minimal payload for Day3 triage (avoid huge JSON and pipe issues)
+http.route({
+  path: "/tasks/triageList",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const unauthorized = requireMcSecret(req);
+    if (unauthorized) return unauthorized;
+
+    const body = await req.json();
+    const { board, state } = body ?? {};
+    const tasks = await ctx.runQuery(api.queries.listByBoard, { board, state });
+    const items = (tasks as any[]).map((t) => ({
+      id: t._id,
+      priority: t.priority,
+      title: t.title,
+    }));
+    return new Response(JSON.stringify({ ok: true, items }), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  }),
+});
+
 http.route({
   path: "/tasks/transition",
   method: "POST",
