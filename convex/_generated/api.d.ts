@@ -10,6 +10,7 @@
 
 import type * as activity from "../activity.js";
 import type * as constants from "../constants.js";
+import type * as dod from "../dod.js";
 import type * as gates from "../gates.js";
 import type * as http from "../http.js";
 import type * as override from "../override.js";
@@ -26,6 +27,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   activity: typeof activity;
   constants: typeof constants;
+  dod: typeof dod;
   gates: typeof gates;
   http: typeof http;
   override: typeof override;
