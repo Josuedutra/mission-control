@@ -1,0 +1,102 @@
+{
+  "agents": {
+    "defaults": {
+      "models": {
+        "tier_frontier": {
+          "alias": "MODEL_FRONTIER_ID"
+        },
+        "tier_balanced": {
+          "alias": "MODEL_BALANCED_ID"
+        },
+        "tier_cost": {
+          "alias": "MODEL_COST_ID"
+        },
+        "tier_reasoning": {
+          "alias": "MODEL_REASONING_ID"
+        }
+      }
+    },
+    "list": [
+      {
+        "id": "coordinator",
+        "name": "Coordinator (PMO / Jarvis)",
+        "model": {
+          "primary": "tier_cost",
+          "fallbacks": ["tier_balanced"]
+        }
+      },
+      {
+        "id": "developer",
+        "name": "Developer (Friday)",
+        "model": {
+          "primary": "tier_balanced",
+          "fallbacks": ["tier_cost", "tier_frontier"]
+        }
+      },
+      {
+        "id": "security",
+        "name": "Security / Compliance (Sentinel)",
+        "model": {
+          "primary": "tier_balanced",
+          "fallbacks": ["tier_cost", "tier_frontier"]
+        }
+      },
+      {
+        "id": "revops",
+        "name": "RevOps / Finance (Ledger)",
+        "model": {
+          "primary": "tier_cost",
+          "fallbacks": ["tier_balanced"]
+        }
+      },
+      {
+        "id": "product_qa",
+        "name": "Product / QA (Shuri)",
+        "model": {
+          "primary": "tier_cost",
+          "fallbacks": ["tier_balanced"]
+        }
+      },
+      {
+        "id": "documentation",
+        "name": "Documentation / Knowledge (Wong)",
+        "model": {
+          "primary": "tier_cost",
+          "fallbacks": ["tier_cost"]
+        }
+      },
+      {
+        "id": "research",
+        "name": "Research / Market Intelligence (Fury)",
+        "model": {
+          "primary": "tier_balanced",
+          "fallbacks": ["tier_cost", "tier_frontier"]
+        }
+      },
+      {
+        "id": "growth_content",
+        "name": "Growth Content (SEO + Copy)",
+        "model": {
+          "primary": "tier_cost",
+          "fallbacks": ["tier_balanced"]
+        }
+      },
+      {
+        "id": "lifecycle",
+        "name": "Lifecycle / Email (Pepper)",
+        "model": {
+          "primary": "tier_cost",
+          "fallbacks": ["tier_cost"]
+        }
+      },
+      {
+        "id": "design",
+        "name": "Design (Wanda)",
+        "model": {
+          "primary": "tier_cost",
+          "fallbacks": ["tier_balanced"]
+        }
+      }
+    ]
+  }
+}

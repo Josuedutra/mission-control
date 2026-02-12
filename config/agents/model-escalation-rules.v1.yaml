@@ -1,0 +1,50 @@
+version: 1
+purpose: "Runtime model tier escalation rules (applied by orchestrator/policy layer)"
+
+default:
+  escalation:
+    if_any_impact:
+      - money_flow
+      - authentication
+      - tenant_isolation
+      - public_claims
+      - irreversible_product_decision
+    then: "+1_tier"
+  emergency:
+    if: "incident_severity == P0"
+    then: "highest_tier"
+  uncertainty:
+    if: "uncertainty_score > 7"
+    then: "+1_tier"
+  post_task:
+    then: "revert_to_baseline"
+
+agent_overrides:
+  developer:
+    frontier_triggers:
+      - auth_changes
+      - multi_tenant_isolation
+      - billing_core
+      - webhook_validation
+      - structural_migrations
+      - production_P0_bug
+
+  security:
+    frontier_triggers:
+      - major_threat_modeling
+      - pre_release_security_review
+      - pii_data_flow_changes
+      - permission_matrix_changes
+
+  research:
+    frontier_triggers:
+      - new_product_decision
+      - icp_pivot
+      - deep_strategic_comparison
+      - kill_or_scale_decision
+
+  documentation:
+    allow_frontier: false
+
+  lifecycle:
+    allow_frontier: false
