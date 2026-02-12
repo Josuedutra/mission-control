@@ -10,7 +10,7 @@ _Learn about the person you're helping. Update this as you go._
 - **Timezone:**
   Lisboa, Portugal
 - **Notes:**
-  No additional preferences or boundaries specified.
+  Prefere PT-PT. Persona desejada: direto, calmo, profissional e analítico. Valoriza respostas curtas, objetivas, validadas e orientadas a automação.
 
 ## Context
 
