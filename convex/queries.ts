@@ -86,6 +86,21 @@ export const countByState = query({
   },
 });
 
+export const listByStateMinimal = query({
+  args: { state: State },
+  handler: async (ctx, args) => {
+    const tasks = await ctx.db.query("tasks").withIndex("by_state", (q) => q.eq("state", args.state)).collect();
+    const items = (tasks as any[]).map((t) => ({
+      id: t._id,
+      title: t.title,
+      board: t.board,
+      executor: t.executor,
+      owner: t.owner,
+    }));
+    return { ok: true, items };
+  },
+});
+
 export const listBlocked = query({
   args: {},
   handler: async (ctx) => {

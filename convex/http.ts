@@ -110,6 +110,23 @@ http.route({
   }),
 });
 
+http.route({
+  path: "/tasks/listByStateMinimal",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const unauthorized = requireMcSecret(req);
+    if (unauthorized) return unauthorized;
+
+    const body = await req.json();
+    const { state } = body ?? {};
+    const res = await ctx.runQuery(api.queries.listByStateMinimal, { state });
+    return new Response(JSON.stringify(res), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  }),
+});
+
 // Minimal payload for Day3 triage (avoid huge JSON and pipe issues)
 http.route({
   path: "/tasks/triageList",

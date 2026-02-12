@@ -44,7 +44,40 @@ count_doing() {
     -d '{"state":"DOING"}'
 }
 
+list_doing_min() {
+  curl -sS -X POST "$CONVEX_SITE_URL/tasks/listByStateMinimal" \
+    -H "content-type: application/json" \
+    -H "x-mc-secret: $MC_HTTP_SECRET" \
+    -d '{"state":"DOING"}'
+}
+
+cleanup_test_doing() {
+  # Move any DOING tasks with title prefix [TEST] back to READY
+  local json
+  json=$(list_doing_min)
+  printf '%s' "$json" | node - <<'NODE'
+const fs = require('node:fs');
+const raw = fs.readFileSync(0,'utf8');
+const j = JSON.parse(raw);
+const items = j.items || [];
+for (const it of items) {
+  if (typeof it.title === 'string' && it.title.startsWith('[TEST]')) {
+    console.log(it.id);
+  }
+}
+NODE
+}
+
 node_get_id='const fs=require("node:fs"); const raw=fs.readFileSync(0,"utf8"); const j=JSON.parse(raw); if(!j.id) process.exit(2); process.stdout.write(j.id);'
+
+echo "== Cleanup: move [TEST] DOING back to READY (keep real work) =="
+for id in $(cleanup_test_doing); do
+  curl -sS -X POST "$CONVEX_SITE_URL/tasks/transition" \
+    -H "content-type: application/json" \
+    -H "x-mc-secret: $MC_HTTP_SECRET" \
+    -d "{\"id\":\"$id\",\"to\":\"READY\",\"actor\":\"$ACTOR\"}" >/dev/null || true
+  echo "moved [TEST] $id -> READY"
+done
 
 echo "== Test D: DoD obrigatório (startDoing sem dodIfEmpty deve falhar) =="
 D_TASK_JSON=$(create_task "[TEST] DoD required" "Company" "Friday" "Friday" "OPS" "P2" "None")
