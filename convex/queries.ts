@@ -78,6 +78,14 @@ export const listByOwner = query({
   },
 });
 
+export const countByState = query({
+  args: { state: State },
+  handler: async (ctx, args) => {
+    const tasks = await ctx.db.query("tasks").withIndex("by_state", (q) => q.eq("state", args.state)).collect();
+    return { ok: true, count: tasks.length, ids: tasks.map((t: any) => t._id) };
+  },
+});
+
 export const listBlocked = query({
   args: {},
   handler: async (ctx) => {
