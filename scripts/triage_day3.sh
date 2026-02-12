@@ -46,16 +46,25 @@ NODE
 # Print what we'd do + apply transitions
 apply_board() {
   local board="$1"
+  local tmp
+  tmp=$(mktemp)
 
-  tasks_by_board_state "$board" "INBOX" | node - <<'NODE' "$board" "$actor"
+  # Avoid pipe/broken-pipe issues by writing response to a temp file first.
+  curl -sS -o "$tmp" -X POST "$CONVEX_SITE_URL/tasks/triageList" \
+    -H "content-type: application/json" \
+    -H "x-mc-secret: $MC_HTTP_SECRET" \
+    -d "{\"board\":\"$board\",\"state\":\"INBOX\"}"
+
+  node - <<'NODE' "$tmp" "$board" "$actor"
 const fs = require('node:fs');
-const raw = fs.readFileSync(0, 'utf8');
-const board = process.argv[1];
-const actor = process.argv[2];
+const file = process.argv[1];
+const board = process.argv[2];
+const actor = process.argv[3];
 const { execSync } = require('node:child_process');
 const site = process.env.CONVEX_SITE_URL;
 const secret = process.env.MC_HTTP_SECRET;
 
+const raw = fs.readFileSync(file, 'utf8');
 if (!raw || raw.trim().length === 0) {
   console.error('EMPTY_RESPONSE');
   process.exit(1);
@@ -66,7 +75,6 @@ try {
   data = JSON.parse(raw);
 } catch (e) {
   console.error('BAD_JSON', e?.message);
-  // Print a short prefix for debugging
   console.error(raw.slice(0, 200));
   process.exit(1);
 }
@@ -79,6 +87,8 @@ for (const t of items) {
   console.log(`[${board}] ${t.priority} -> ${to} :: ${t.id} :: ${t.title}`);
 }
 NODE
+
+  rm -f "$tmp"
 }
 
 apply_board "Ritmo"
