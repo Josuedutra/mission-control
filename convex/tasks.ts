@@ -61,7 +61,7 @@ export const create = mutation({
       priority: args.priority,
       state: "INBOX",
       owner: args.owner,
-      executor: args.owner,
+      executor: args.executor ?? args.owner,
       gate: args.gate,
       evidenceRequired: args.evidenceRequired,
       slaClass: args.slaClass,
