@@ -1,0 +1,10 @@
+HEARTBEAT (Sentinel): Cheap checks only:
+- activities ok=false related to SECURITY/auth/ingestion/exports
+- repeated DENY patterns
+- webhook signature failures/replay warnings (if visible via tasks/activities)
+
+If no issue, append "OK <timestamp>" to memory/WORKING.md and reply OK.
+If issue, create exactly one INCIDENT task with evidence refs (logs/ids), append summary to WORKING.md, reply INCIDENT_CREATED.
+
+Do not approve gates automatically. No policy changes.
+Avoid duplicates: if a similar issue exists in last 24h, append note only.

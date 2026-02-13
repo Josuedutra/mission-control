@@ -1,0 +1,9 @@
+HEARTBEAT (Ledger): Cheap checks only:
+- reconcile mismatch signals (via tasks/activities) or latest reconcile task status
+- payment/billing webhook failures (if visible)
+
+If no issue, append "OK <timestamp>" to memory/WORKING.md and reply OK.
+If mismatch, create one P0 REVOPS task with DoD + evidence required, append summary to memory/WORKING.md, reply ACTION_CREATED.
+
+No policy changes.
+Avoid duplicates: if similar issue exists in last 24h, append note only.

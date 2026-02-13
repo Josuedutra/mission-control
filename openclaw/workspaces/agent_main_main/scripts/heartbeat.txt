@@ -1,0 +1,12 @@
+HEARTBEAT (Jarvis): Run cheap checks only:
+- WIP counts (global, Ritmo, per-executor)
+- blocked tasks list
+- approval pending list (state=APPROVAL)
+- overrides approaching reviewDeadline
+- recent activities with ok=false
+
+If everything OK, append "OK <timestamp>" to memory/WORKING.md and reply OK.
+If action is needed, create at most 3 tasks (P0/P1) with clear DoD and evidence requirements, then append summary to memory/WORKING.md and reply ACTIONS_CREATED.
+
+Never change runtime policies.
+If a similar issue exists in the last 24h, do not create duplicates; append note only.
