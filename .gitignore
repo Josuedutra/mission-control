@@ -9,6 +9,8 @@ openclaw/**/.env*
 
 # OpenClaw runtime artifacts (do not commit)
 openclaw/workspaces/**/*
+
+# Allowlist: versioned files
 !openclaw/workspaces/**/SOUL.md
-!openclaw/workspaces/**/scripts/
+!openclaw/workspaces/**/scripts
 !openclaw/workspaces/**/scripts/**
