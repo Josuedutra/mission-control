@@ -9,6 +9,7 @@
  */
 
 import type * as activity from "../activity.js";
+import type * as assign from "../assign.js";
 import type * as constants from "../constants.js";
 import type * as dod from "../dod.js";
 import type * as evidence from "../evidence.js";
@@ -27,6 +28,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   activity: typeof activity;
+  assign: typeof assign;
   constants: typeof constants;
   dod: typeof dod;
   evidence: typeof evidence;

@@ -202,6 +202,23 @@ http.route({
 });
 
 http.route({
+  path: "/tasks/setExecutor",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const unauthorized = requireMcSecret(req);
+    if (unauthorized) return unauthorized;
+
+    const body = await req.json();
+    const { id, actor, executor } = body ?? {};
+    const res = await ctx.runMutation(api.assign.setExecutor, { id, actor, executor });
+    return new Response(JSON.stringify(res), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  }),
+});
+
+http.route({
   path: "/tasks/evidence",
   method: "POST",
   handler: httpAction(async (ctx, req) => {
