@@ -6,3 +6,9 @@ coverage/
 # OpenClaw per-agent configs (never commit secrets)
 openclaw/**/config/
 openclaw/**/.env*
+
+# OpenClaw runtime artifacts (do not commit)
+openclaw/workspaces/**/*
+!openclaw/workspaces/**/SOUL.md
+!openclaw/workspaces/**/scripts/
+!openclaw/workspaces/**/scripts/**
