@@ -8,3 +8,5 @@ See **GOVERNANCE.md** for the authority model.
 See **ARCHITECTURE.md** for the system architecture.
 See **POLICY_CHANGE_PROCESS.md** for controlled policy evolution.
 See **FOUNDATION_PRINCIPLES.md** for the strategic manifesto.
+
+Docs index: **docs/README.md**
