@@ -2,3 +2,7 @@
 node_modules/
 coverage/
 .DS_Store
+
+# OpenClaw per-agent configs (never commit secrets)
+openclaw/**/config/
+openclaw/**/.env*
