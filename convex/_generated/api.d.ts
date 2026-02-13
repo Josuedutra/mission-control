@@ -11,6 +11,7 @@
 import type * as activity from "../activity.js";
 import type * as assign from "../assign.js";
 import type * as constants from "../constants.js";
+import type * as docs from "../docs.js";
 import type * as dod from "../dod.js";
 import type * as evidence from "../evidence.js";
 import type * as gates from "../gates.js";
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   activity: typeof activity;
   assign: typeof assign;
   constants: typeof constants;
+  docs: typeof docs;
   dod: typeof dod;
   evidence: typeof evidence;
   gates: typeof gates;

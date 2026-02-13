@@ -14,6 +14,7 @@ HTTP Actions:
 - POST /tasks/transition (requires `X-MC-SECRET`)
 - POST /tasks/evidence (requires `X-MC-SECRET`)
 - POST /tasks/setExecutor (requires `X-MC-SECRET`)
+- POST /tasks/setDocsUpdated (requires `X-MC-SECRET`)
 - POST /tasks/approve (requires `X-MC-SECRET`)
 - POST /tasks/override (requires `X-MC-SECRET`)
 
