@@ -1,0 +1,50 @@
+{
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "text": true
+  },
+  "agents": {
+    "defaults": {
+      "repoRoot": "/root/.openclaw/workspace",
+      "workspace": "/root/.openclaw/workspace/openclaw/workspaces/agent_main_main",
+      "userTimezone": "Europe/Lisbon",
+      "envelopeTimezone": "utc",
+      "envelopeTimestamp": "on",
+      "envelopeElapsed": "on"
+    },
+    "list": [
+      {
+        "id": "coordinator",
+        "default": true,
+        "name": "Jarvis (Coordinator)",
+        "workspace": "/root/.openclaw/workspace/openclaw/workspaces/agent_main_main"
+      },
+      {
+        "id": "security",
+        "name": "Sentinel (Security & Compliance)",
+        "workspace": "/root/.openclaw/workspace/openclaw/workspaces/agent_security_main"
+      },
+      {
+        "id": "revops",
+        "name": "Ledger (RevOps & Finance)",
+        "workspace": "/root/.openclaw/workspace/openclaw/workspaces/agent_revops_main"
+      },
+      {
+        "id": "product_qa",
+        "name": "Shuri (Product & UX)",
+        "workspace": "/root/.openclaw/workspace/openclaw/workspaces/agent_product_main"
+      },
+      {
+        "id": "research",
+        "name": "Fury (Claims & Market Validation)",
+        "workspace": "/root/.openclaw/workspace/openclaw/workspaces/agent_claims_main"
+      },
+      {
+        "id": "developer",
+        "name": "Friday (Engineering)",
+        "workspace": "/root/.openclaw/workspace/openclaw/workspaces/agent_developer_main"
+      }
+    ]
+  }
+}
